@@ -1,0 +1,47 @@
+---
+# tasks file for ads-mysql
+- name: Install mysql
+  import_role:
+    name: geerlingguy.mysql
+  vars:
+    mysql_user_password: "{{ mysql_root_password }}"
+    mysql_databases:
+    - name: "{{ example_database }}"
+    mysql_users:
+    - name: "{{ example_database_user }}"
+      host: "%"
+      password: "{{ example_database_password }}"
+      priv: "{{ example_database }}.*:ALL"
+
+- name: Schedule mysqldump
+  cron:
+    name: "Schedule mysqldump"
+    job: 'mysqldump -u root -p{{ mysql_root_password }} > /var/backup$(date +"\%Y\%m\%d\%H\%M").sql'
+
+# - name: Install apt deps
+#   apt:
+#     name: "{{ item }}"
+#     state: present
+#   with_items:
+#     - python-setuptools
+#     - python-pip
+
+# - name: Install dependencies
+#   pip:
+#     name: PyMySQL
+#     state: present
+
+# - name: Install mysql
+#   apt:
+#     name: mysql-server
+#     state: present
+#     update_cache: yes
+
+# - name: Change root password
+#   mysql_user:
+#     name: root
+#     host: "%"
+#     password: "root"
+#     login_user: root
+#     # check_implicit_admin: yes
+#     priv: "*.*:ALL,GRANT"
